@@ -6,11 +6,15 @@
         header("Location: login.php");
     endif;
 
-    $con =  new mysqli("localhost", "root", "", "coco");
+    $conn = new PDO('mysql:host=localhost;dbname=coco;charset=utf8', 'root', '');
+    $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
     $key = $_SESSION["hash"];
-    $result = $con->query("SELECT * FROM usuarios WHERE hash = '$key'");
-    $con->close();
-    if($result->num_rows == 0):
+    $stmt = $conn->prepare("SELECT * FROM usuarios WHERE hash = :keyhash ");
+    $stmt->execute([
+        'keyhash' => $key
+    ]);
+    $result = $stmt->rowCount();
+    if($result == 0):
         header('Location: error.php');
     endif;
 

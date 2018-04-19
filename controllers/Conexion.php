@@ -4,21 +4,21 @@ class Conexion {
     private $base = "coco";
     private $user = "root";
     private $pwd = "";
-
-    private $conn;
-
+    private $charset = "utf8";
+    public $conn;
     public $status;
 
     protected function start(){
-        $this->conn = new mysqli($this->host, $this->user,
-            $this->pwd, $this->base);
-        $this->conn->set_charset("UTF8");
-        if($this->conn->connect_errno) {
+        try{
+            $this->conn = new PDO('mysql:host='.$this->host.';dbname='.$this->base.';charset='.$this->charset, $this->user, $this->pwd);
+            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+            $this->status = 202;
+            return true;
+        }
+        catch (PDOException $ex) {
             $this->status = 503;
             return false;
         }
-        $this->status = 202;
-        return true;
     }
 
     protected function query($query){
@@ -26,7 +26,7 @@ class Conexion {
     }
 
     protected function stop(){
-        $this->conn->close();
+        $this->conn = null;
     }
 }
 ?>

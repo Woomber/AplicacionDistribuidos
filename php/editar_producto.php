@@ -9,7 +9,8 @@ if(@isset($_POST["mod_nombre"])){
             $producto->nombre = $_POST["mod_nombre"];
             $producto->existencia = intval($_POST["mod_existencia"]);
             $producto->precio = floatval($_POST["mod_precio"]);
-            if($controller->modify($producto)){
+            $res = $controller->modify($producto);
+            if($res){
                 header("Location: productos.php");
             }
         }else header("Location: errorModificado.php");
@@ -30,6 +31,15 @@ if(@isset($_GET["id"])){
 }
 
 ?>
+
+<?php if(isset($res)):?>
+    <?php if(!$res):?>  
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        No borres los patrones y los required!!
+    </div>
+    <?php endif;?>
+<?php endif;?>
 
 <div class="form-group">
 <label for="mod_nombre" class="col-sm-3 control-label">Nombre</label>

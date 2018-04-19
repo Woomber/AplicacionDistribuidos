@@ -7,11 +7,11 @@
 		$log = new Login();
 		$usr = $_POST["usuario"];
 		$pwd = $_POST["pass"];
-		if($log->checkLogin($usr, $pwd)){
+		if($log->checkLogin($usr, $pwd)):
 			@session_start();
 			$_SESSION["usuario"] = $usr;
 			$_SESSION["hash"] = $log->key;
 			header('Location: productos.php');
-		}
+		endif;
     }
 ?>

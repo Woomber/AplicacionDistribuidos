@@ -17,14 +17,15 @@ class ProductoController extends Conexion {
             return false;
         }
 
-        $result = $this->query("SELECT * FROM " . $this->tabla);
+        $stmt = $this->conn->prepare("SELECT * FROM ".$this->tabla);
+        $stmt->execute();
 
-        if($result) $this->status = 200;
+        if($stmt) $this->status = 200;
         else $this->status = 404;
 
         $lista = array();
 
-        while($fila = $result->fetch_array()){
+        while($fila = $stmt->fetch(PDO::FETCH_ASSOC)):
             $producto = new Producto();
             $producto->set(
                 $fila[$this->fields["id"]],
@@ -33,7 +34,7 @@ class ProductoController extends Conexion {
                 $fila[$this->fields["precio"]]
             );
             $lista[] = $producto;
-        }
+        endwhile;
         
         $this->stop();
         return $lista; 
@@ -46,11 +47,17 @@ class ProductoController extends Conexion {
             return false;
         }
 
-        $result = $this->query("SELECT * FROM " . $this->tabla . " " .
-            "WHERE " . $this->fields["id"] . " = $id");
+        $stmt = $this->conn->prepare(
+            "SELECT * FROM ".$this->tabla." ".
+            "WHERE ".$this->fields["id"]." = :id"
+        );
 
-        if($result){
-            if($result->num_rows>0)$this->status = 200;
+        $stmt->execute([
+            'id' => $id
+        ]);
+
+        if($stmt){
+            if($stmt->rowCount() > 0)$this->status = 200;
             else $this->status=404;
         }else {
             $this->status = 404;
@@ -59,7 +66,7 @@ class ProductoController extends Conexion {
 
         $producto = new Producto();
 
-        if($fila = $result->fetch_array()){
+        if($fila = $stmt->fetch(PDO::FETCH_ASSOC)){
             $producto->set(
                 $fila[$this->fields["id"]],
                 $fila[$this->fields["nombre"]],
@@ -85,20 +92,41 @@ class ProductoController extends Conexion {
             return false;
         }
 
-        $result = $this->query(
-            "INSERT INTO " . $this->tabla . " (" .
-            $this->fields["nombre"] . ", " .
-            $this->fields["exist"] . ", " .
-            $this->fields["precio"] . ") VALUES (" .
-            "'$producto->nombre', " .
-            "$producto->existencia, " .
-            "$producto->precio)");
+        if(empty($producto->existencia) && empty($producto->precio) && empty($producto->nombre)):
+            return false;
+        endif;
 
-        if($result) $this->status = 200;
+        if(!filter_var($producto->precio, FILTER_VALIDATE_INT) && !filter_var($producto->existencia, FILTER_VALIDATE_INT)):
+            return false;
+        endif;
+
+        if((int)$producto->precio < 0 || (int)$producto->existencia < 0):
+            return false;
+        endif;
+        
+        $stmt = $this->conn->prepare(
+            "INSERT INTO ".$this->tabla."
+            (
+                ".$this->fields["nombre"].",
+                ".$this->fields["exist"].",
+                ".$this->fields["precio"]."
+            ) VALUES (
+                :nombre,
+                :exist,
+                :precio
+            )
+        ");
+
+        $stmt->execute([
+            'nombre' => $producto->nombre,
+            'exist' => $producto->existencia,
+            'precio' => $producto->precio
+        ]);
+        if($stmt) $this->status = 200;
         else $this->status = 503;
 
         $this->stop();
-        return $result; 
+        return $stmt; 
 
     }    
 
@@ -114,15 +142,35 @@ class ProductoController extends Conexion {
             return false;
         }
 
-        $result = $this->query(
-            "UPDATE " . $this->tabla . " SET " .
-            $this->fields["nombre"] . " = '$producto->nombre', " .
-            $this->fields["exist"] . " = $producto->existencia, " .
-            $this->fields["precio"] . " = $producto->precio " .
-            "WHERE " . $this->fields["id"] . " = $producto->id"
+        if(empty($producto->existencia) && empty($producto->precio) && empty($producto->nombre)):
+            return false;
+        endif;
+
+        if(!filter_var($producto->precio, FILTER_VALIDATE_INT) && !filter_var($producto->existencia, FILTER_VALIDATE_INT)):
+            return false;
+        endif;
+
+         if((int)$producto->precio < 0 || (int)$producto->existencia < 0):
+            return false;
+        endif;
+
+        $stmt = $this->conn->prepare(
+            "UPDATE ".$this->tabla.
+            " SET ".
+            $this->fields["nombre"]." = :nombre, ".
+            $this->fields["exist"]." = :exist, ".
+            $this->fields["precio"]." = :precio ".
+            "WHERE ".$this->fields["id"]." = :id"
         );
 
-        if($result) $this->status = 200;
+        $stmt->execute([
+            'nombre' => $producto->nombre,
+            'exist' => $producto->existencia,
+            'precio' => $producto->precio,
+            'id' => $producto->id
+        ]);
+        
+        if($stmt) $this->status = 200;
         else $this->status = 503;
 
         $this->stop();
@@ -142,12 +190,16 @@ class ProductoController extends Conexion {
             return false;
         }
 
-        $result = $this->query(
-            "DELETE FROM " . $this->tabla . " " .
-            "WHERE " . $this->fields["id"] . " = $producto->id"
+        $stmt = $this->conn->prepare(
+            "DELETE FROM ".$this->tabla." ".
+            "WHERE ".$this->fields["id"]." = :id"
         );
 
-        if($result) $this->status = 200;
+        $stmt->execute([
+            'id' => $producto->id
+        ]);
+
+        if($stmt) $this->status = 200;
         else $this->status = 503;
 
         $this->stop();

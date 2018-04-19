@@ -7,35 +7,40 @@ class Login extends Conexion {
     public $key = '';
     private $fields = array(
         "user" => "username",
-        "pwd"  => "password"
+        "pwd"  => "password",
+        "hash" => "hash"
     );
 
     public function checkLogin($username, $password){
-        if(!$this->start()) {
-            $this->stop();
-            return false;
-        }
+
+        $this->start();
 
         $username = trim($username);
         $password = hash("sha256", $password);
         
-        $result = $this->query("SELECT * FROM ". $this->tabla." ".
-        "WHERE ". $this->fields["user"] ." = '$username' " . 
-        "AND " . $this->fields["pwd"] . " = '$password'");
-        
-        if($result->num_rows > 0): 
+        $stmt = $this->conn->prepare("SELECT * FROM ".$this->tabla." WHERE ".$this->fields["user"]." = :username AND ".$this->fields["pwd"]." = :password");
+        $stmt->execute([
+            'username' => $username,
+            'password' => $password 
+        ]);
+
+        $result = $stmt->rowCount();
+        $this->key = $this->tabla;
+        if($result > 0): 
             $this->status = 200;
             $key = hash("sha256",(string)mt_rand(10, 1000));
-            $this->query("UPDATE ". $this->tabla ." ".
-            "SET  hash = '$key' WHERE ". $this->fields["user"] ." = '$username'");
-            $this->key = $key;
+            $stmt = $this->conn->prepare("UPDATE ".$this->tabla." SET  hash = :hash WHERE ".$this->fields["user"]." = :username");
+            $stmt->execute([
+                "hash" => $key,
+                "username" => $username
+            ]);
+            $this->key=$key;
         else:
             $this->status = 404;
         endif;
         
-        
-        $this->stop();  
-        return $result->num_rows;
+        $this->stop();
+        return $result;
     }
 
     public function createLogin($username, $password){
@@ -52,11 +57,28 @@ class Login extends Conexion {
 
         $username = trim($username);
         $password = hash("sha256", $password);
+        $key = hash("sha256",(string)mt_rand(10, 1000));
 
-        $result = $this->query("INSERT INTO ". $this->tabla . " " . 
-            "VALUES ('$username', '$password','')");
+        $stmt = $this->conn->prepare(
+            "INSERT INTO ".$this->tabla."
+            (
+                ".$this->fields["user"].",
+                ".$this->fields["pwd"].",
+                ".$this->fields["hash"]."
+            ) VALUES (
+                :username,
+                :password,
+                :hash
+            )
+        ");
 
-        if($result) $this->status = 200;
+        $stmt->execute([
+            'username' => $username,
+            'password' => $password,
+            'hash' => $key
+        ]);
+
+        if($stmt) $this->status = 200;
         else $this->status = 503;
         
         $this->stop();

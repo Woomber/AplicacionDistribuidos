@@ -6,12 +6,20 @@
         $producto->nombre = $_POST["mod_nombre"];
         $producto->existencia = intval($_POST["mod_existencia"]);
         $producto->precio = floatval($_POST["mod_precio"]);
-        if($controller->add($producto)){
+        $res = $controller->add($producto);
+        if($res){
             header("Location: productos.php");
         }
     }
 ?>
-
+<?php if(isset($res)):?>
+    <?php if(!$res):?>  
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        No borres los patrones y los required!!
+    </div>
+    <?php endif;?>
+<?php endif;?>
 <div class="form-group">
     <label for="mod_nombre" class="col-sm-3 control-label">Nombre</label>
     <div class="col-sm-8">
