@@ -12,7 +12,7 @@ foreach($productos as $producto){
         <span class="pull-right">
             <a href="editar_producto.php?id=<?php echo $producto->id ?>"
             class='btn btn-default' title='Editar producto'><i class="glyphicon glyphicon-edit"></i></a> 
-            <a href="eliminar_producto.php?id=<?php echo $producto->id ?>" class='btn btn-default' title='Borrar producto'><i class="glyphicon glyphicon-trash"></i></a>
+            <a href="eliminar_producto.php?id=<?php echo $producto->id ?>&nombre=<?php echo $producto->nombre ?>&exist=<?php echo $producto->existencia;?>&precio=<?php echo $producto->precio;?>" class='btn btn-default' title='Borrar producto'><i class="glyphicon glyphicon-trash"></i></a>
         </span>
     </td>
 </tr>

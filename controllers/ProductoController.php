@@ -49,8 +49,13 @@ class ProductoController extends Conexion {
         $result = $this->query("SELECT * FROM " . $this->tabla . " " .
             "WHERE " . $this->fields["id"] . " = $id");
 
-        if($result) $this->status = 200;
-        else $this->status = 404;
+        if($result){
+            if($result->num_rows>0)$this->status = 200;
+            else $this->status=404;
+        }else {
+            $this->status = 404;
+            return;
+        }
 
         $producto = new Producto();
 

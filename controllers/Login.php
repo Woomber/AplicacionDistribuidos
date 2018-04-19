@@ -54,7 +54,7 @@ class Login extends Conexion {
         $password = hash("sha256", $password);
 
         $result = $this->query("INSERT INTO ". $this->tabla . " " . 
-            "VALUES ('$username', '$password')");
+            "VALUES ('$username', '$password','')");
 
         if($result) $this->status = 200;
         else $this->status = 503;
