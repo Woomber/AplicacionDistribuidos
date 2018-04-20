@@ -59,6 +59,14 @@ class Login extends Conexion {
         $password = hash("sha256", $password);
         $key = hash("sha256",(string)mt_rand(10, 1000));
 
+        $result = $this->conn->prepare("SELECT * FROM " . $this->tabla . " WHERE " . $this->fields["user"] . " = ?");
+        $result->execute(array($username));
+        $cant = $result->rowCount();
+        if($cant > 0) {
+            $this->status = 404;
+            return false;
+        }
+
         $stmt = $this->conn->prepare(
             "INSERT INTO ".$this->tabla."
             (
@@ -78,8 +86,12 @@ class Login extends Conexion {
             'hash' => $key
         ]);
 
-        if($stmt) $this->status = 200;
-        else $this->status = 503;
+        if($stmt) {
+            $this->status = 200;
+        } 
+        else {
+            $this->status = 503;
+        }
         
         $this->stop();
         return $result; 
