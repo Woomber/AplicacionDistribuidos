@@ -50,6 +50,10 @@
         protected function stop(){
             $this->pdo = null;
         }
+        
+        public function getConnection () {
+            return $this->pdo;
+        }
 
     }
 
