@@ -49,6 +49,21 @@
             }
 
             $stmt = $this->pdo->prepare(
+                "SELECT * FROM " . $this->tabla . " " .
+                "WHERE " . $this->fields["id"] . " = :id"
+            );
+            $stmt->execute([
+                'id' => $_GET["id"]
+            ]);
+
+            $this->result = $stmt->fetch();
+            $producto = new ProductoModelo();
+            $producto->id = $this->result->id;
+            $producto->nombre = $this->result->nombre;
+            $producto->existencia = $this->result->existencia;
+            $producto->precio = $this->result->precio;
+
+            $stmt = $this->pdo->prepare(
                 "DELETE FROM ".$this->tabla." ".
                 "WHERE ".$this->fields["id"]." = :id"
             );
@@ -57,10 +72,16 @@
                 'id' => $_GET["id"]
             ]);
 
+            $usuario = new UsuarioModelo();
+            $usuario->username = $_SESSION["usuario"];
+            $log = new LoggerControlador();
+            $log->Eliminar($usuario, $producto);
+
             if($stmt) $this->status = 200;
             else $this->status = 503;
 
             $this->stop();
+            
             header("Location: producto.php?c=Producto&a=Lista");
 
         }
@@ -103,13 +124,19 @@
                         :precio
                     )
                 ");
-
+                
                 $stmt->execute([
                     'nombre' => $producto->nombre,
                     'exist' => $producto->existencia,
                     'precio' => $producto->precio
                 ]);
+                    
+                $producto->id = $this->pdo->lastInsertId();
+                $usuario = new UsuarioModelo();
+                $usuario->username = $_SESSION["usuario"];
 
+                $log = new LoggerControlador();
+                $log->Agregar($usuario, $producto);
                 if($stmt) $this->status = 200;
                 else $this->status = 503;
 
@@ -181,6 +208,12 @@
                             'precio' => $producto->precio,
                             'id' => $producto->id
                         ]);
+
+                        $usuario = new UsuarioModelo();
+                        $usuario->username = $_SESSION["usuario"];
+
+                        $log = new LoggerControlador();
+                        $log->Modificar($usuario, $producto);
 
                         $this->stop();
                         header("Location: producto.php?c=Producto&a=Lista");
