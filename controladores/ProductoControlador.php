@@ -56,6 +56,23 @@
                 'id' => $_GET["id"]
             ]);
 
+            if($stmt->rowCount() == 0):
+                $usuario = new UsuarioModelo();
+                $usuario->username = $_SESSION["usuario"];
+
+                $producto = new ProductoModelo();
+                $producto->id = $_GET["id"];
+                $producto->nombre = "NE";
+                $producto->existencia = -1;
+                $producto->precio = -1;
+
+                $log = new LoggerControlador();
+                $log->IEliminar($usuario, $producto);
+                
+                header("Location: producto.php?c=Producto&a=Lista&e=2");
+                return;
+            endif;
+
             $this->result = $stmt->fetch();
             $producto = new ProductoModelo();
             $producto->id = $this->result->id;
@@ -218,10 +235,20 @@
                         $this->stop();
                         header("Location: producto.php?c=Producto&a=Lista");
                     else:
-                        header("Location: producto.php?c=Producto&a=Lista&e=Modificado");
+                        $usuario = new UsuarioModelo();
+                        $usuario->username = $_SESSION["usuario"];
+
+                        $log = new LoggerControlador();
+                        $log->IModificar($usuario, $producto);
+                        header("Location: producto.php?c=Producto&a=Lista&e=3");
                     endif;
                 else:
-                    header("Location: producto.php?c=Producto&a=Lista&e=Borrado");
+                    $usuario = new UsuarioModelo();
+                    $usuario->username = $_SESSION["usuario"];
+
+                    $log = new LoggerControlador();
+                    $log->IModificar($usuario, $producto);
+                    header("Location: producto.php?c=Producto&a=Lista&e=1");
                 endif;
 
             else:
@@ -249,7 +276,7 @@
                         $_SESSION["producto_existencia"] = $this->result->existencia;
                         $_SESSION["producto_precio"] = $this->result->precio;
                     else:
-                        header("Location: producto.php?c=Producto&a=Lista");    
+                        header("Location: producto.php?c=Producto&a=Lista&e=2");    
                     endif;
                 else:
                     header("Location: producto.php?c=Producto&a=Lista");

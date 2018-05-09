@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-05-2018 a las 15:43:00
+-- Tiempo de generación: 04-05-2018 a las 15:44:06
 -- Versión del servidor: 10.1.28-MariaDB
 -- Versión de PHP: 7.1.11
 
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `coco`
 --
+CREATE DATABASE IF NOT EXISTS `coco` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `coco`;
 
 -- --------------------------------------------------------
 

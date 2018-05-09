@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-05-2018 a las 15:42:23
+-- Tiempo de generación: 09-05-2018 a las 12:30:01
 -- Versión del servidor: 10.1.28-MariaDB
 -- Versión de PHP: 7.1.11
 
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `log`
 --
+CREATE DATABASE IF NOT EXISTS `log` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `log`;
 
 -- --------------------------------------------------------
 
@@ -32,7 +34,7 @@ CREATE TABLE `logger` (
   `id` int(11) NOT NULL,
   `usuario` varchar(32) NOT NULL,
   `fecha` datetime NOT NULL,
-  `accion` char(1) NOT NULL,
+  `accion` char(2) NOT NULL,
   `id_producto` int(11) NOT NULL,
   `nombre` varchar(64) NOT NULL,
   `existencia` int(11) NOT NULL,
@@ -44,16 +46,21 @@ CREATE TABLE `logger` (
 --
 
 INSERT INTO `logger` (`id`, `usuario`, `fecha`, `accion`, `id_producto`, `nombre`, `existencia`, `precio`) VALUES
-(4, 'admin', '2018-05-04 08:27:01', 'B', 27, 'Test 1', 1, 1),
-(5, 'admin2', '2018-05-04 08:28:20', 'B', 28, 'Test 2', 2, 2),
-(6, 'admin2', '2018-05-04 08:34:52', 'A', 0, 'Test 1', 1, 1),
-(7, 'admin2', '2018-05-04 08:35:37', 'A', 30, 'Test 2', 2, 2),
-(8, 'admin2', '2018-05-04 08:36:14', 'B', 30, 'Test 2', 2, 2),
-(9, 'admin', '2018-05-04 08:36:28', 'B', 29, 'Test 1', 1, 1),
-(10, 'admin', '2018-05-04 08:36:37', 'A', 31, 'test 1', 1, 1),
-(11, 'admin', '2018-05-04 08:38:53', 'E', 31, 'test 2', 2, 2),
-(12, 'wero', '2018-05-04 08:39:47', 'E', 31, 'Paletas', 23, 12),
-(13, 'wero', '2018-05-04 08:40:09', 'E', 31, 'Paletas', 23, 12);
+(30, 'admin', '2018-05-09 05:12:49', 'E', 35, 'test', 2, 1),
+(31, 'admin', '2018-05-09 05:12:51', 'IE', 35, 'test', 1, 1),
+(32, 'admin', '2018-05-09 05:18:57', 'B', 35, 'test', 2, 1),
+(33, 'admin', '2018-05-09 05:18:58', 'IE', 35, 'test', 2, 1),
+(34, 'admin', '2018-05-09 05:22:18', 'B', 30, 'NE', -1, -1),
+(35, 'admin', '2018-05-09 05:23:09', 'IB', 30, 'NE', -1, -1),
+(36, 'admin', '2018-05-09 05:23:44', 'IB', 30, 'NE', -1, -1),
+(37, 'admin', '2018-05-09 05:25:15', 'IB', 30, 'NE', -1, -1),
+(38, 'admin', '2018-05-09 05:25:35', 'IB', 30, 'NE', -1, -1),
+(39, 'admin', '2018-05-09 05:25:43', 'IB', 30, 'NE', -1, -1),
+(40, 'admin', '2018-05-09 05:25:57', 'A', 36, 'Test 1', 1, 1),
+(41, 'admin', '2018-05-09 05:26:06', 'B', 36, 'Test 1', 1, 1),
+(42, 'admin', '2018-05-09 05:26:07', 'IE', 36, 'Test 1', 1, 1),
+(43, 'admin', '2018-05-09 05:26:47', 'A', 37, 'Test 2', 2, 2),
+(44, 'admin', '2018-05-09 05:28:50', 'IB', 30, 'NE', -1, -1);
 
 --
 -- Índices para tablas volcadas
@@ -73,7 +80,7 @@ ALTER TABLE `logger`
 -- AUTO_INCREMENT de la tabla `logger`
 --
 ALTER TABLE `logger`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

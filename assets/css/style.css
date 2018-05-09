@@ -25,7 +25,7 @@ nav {
 	color: white !important;
 }
 .full-screen{
-	height: 100vh;
+	height: calc(100vh - 103px);
 	width: 100%;
 }
 
