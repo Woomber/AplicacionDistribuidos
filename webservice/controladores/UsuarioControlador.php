@@ -54,7 +54,7 @@ function CheckUsuario($key){
                     $stmt->execute([
                         "hash" => $key,
                         "username" => $username
-                    ]);
+                    ]); 
                     return array("usuario" => $username, "hash" => $key);
                 else:
                     return 3;

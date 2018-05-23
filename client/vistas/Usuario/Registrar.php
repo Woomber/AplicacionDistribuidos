@@ -1,4 +1,16 @@
 <?php
+    require_once "nusoap/lib/nusoap.php";
+    $client = new SoapClient("http://localhost/distribuidos/webservice/metodos.php?wsdl", "wsdl");
+
+    if(isset($_POST["usuario"]) && isset($_POST["password"])){
+        $usuario = $_POST["usuario"];
+        $password = $_POST["password"];
+        $result = $client->call("registrarUsuario",array("usuario" => $usuario, "password" => $password));
+        if($result != 2 && $result !=3) $_SESSION["usuario"] = $result;
+    }
+    else{
+        $result = 1;
+    }
 
     function check($param){
         if(isset($_POST[$param])):
@@ -18,11 +30,11 @@
             </div>
 			<div class="panel-body">
 				<?php
-					if($master->result != 1): ?>
+					if($result != 1): var_dump($result); ?>
 					<div class="alert alert-danger" role="alert">
 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                         <?php 
-                            switch($master->result):
+                            switch($result):
                                 case 2: echo "No pueden existir campos vacíos."; break;
                                 case 3: echo "El nombre de usuario ya esta siendo usado."; break;
                             endswitch;

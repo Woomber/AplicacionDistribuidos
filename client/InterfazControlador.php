@@ -29,9 +29,23 @@
                     header("Location: usuario.php?c=Usuario&a=Ingresar");
                 endif;
             else:
-                $usuario = new UsuarioControlador();
-                if($usuario->check()):
+                //$usuario = new UsuarioControlador();
+                require_once "nusoap/lib/nusoap.php";
+                $client = new SoapClient("http://localhost/distribuidos/webservice/metodos.php?wsdl", "wsdl");
+                
+                /*if($usuario->check()):
                     header("Location: usuario.php?c=Usuario&a=Ingresar");
+                endif;*/
+
+                $user = $_SESSION["usuario"];
+                $key = $user->hash;
+
+                if($client->call("CheckUsuario",array("key" => $key))):
+                    unset($_SESSION["usuario"]);
+                    session_destroy();
+                    header("Location: usuario.php?c=Usuario&a=Ingresar");
+
+
                 endif;
                 if($this->controlador && $this->accion):
                     if($this->controlador != "Producto"):

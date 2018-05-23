@@ -1,7 +1,7 @@
 <?php
     session_start();
-    require_once("requires.php");
-
+    //require_once("requires.php");
+    require_once("InterfazControlador.php");
     $interfaz = new InterfazControlador();
     $controlador = $interfaz->getControlador();
     $accion = $interfaz->getAccion();
