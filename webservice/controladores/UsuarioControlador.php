@@ -13,7 +13,7 @@
 
         public function __construct(){}
 
-        public function Ingresar($usuario, $password){
+        public function ingresarUsuario($usuario, $password){
 
             if(true):
                 
@@ -54,7 +54,7 @@
 
         }   
 
-        public function Registrar($usuario, $password){
+        public function registrarUsuario($usuario, $password){
 
             if(true):
 
@@ -114,7 +114,7 @@
             return;
         }
 
-        public function Check($key){
+        public function CheckUsuario($key){
 
             if(isset($key)):
 
