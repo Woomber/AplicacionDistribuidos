@@ -1,10 +1,13 @@
  <?php
 require_once "nusoap/lib/nusoap.php";
+include_once "modelos/ProductoModelo.php";
+include_once "modelos/UsuarioModelo.php";
 include "controladores/InterfazControlador.php";
 include "controladores/LoggerControlador.php";
 include "controladores/ProductoControlador.php";
 include "controladores/UsuarioControlador.php";
 ob_clean();
+error_reporting(0);
 
 $server = new soap_server() ;
 $server->configureWSDL("metodos", "urn:metodos");
