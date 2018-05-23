@@ -282,7 +282,8 @@ Class DBConexion {
                     $actual->existencia = $res->existencia;
                     $actual->precio = $res->precio;
 
-                    if($actual->id == $id && $actual->nombre == $nombre && $actual->existencia == $existencia && $actual->precio == $precio):
+                    //Ahorita modifica siempre
+                    if(true):
                         $stmt = $this->pdo->prepare(
                             "UPDATE ".$this->tabla.
                             " SET ".
