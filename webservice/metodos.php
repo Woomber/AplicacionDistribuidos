@@ -6,11 +6,19 @@ include "controladores/ProductoControlador.php";
 include "controladores/UsuarioControlador.php";
 ob_clean();
 
-$server = new soap_server();
+$server = new soap_server() ;
 $server->configureWSDL("metodos", "urn:metodos");
  
 
 //producto controlador
+$server->register("hola",//
+    array(),
+    array("return" => "xsd:string"),
+    "urn:metodos",
+    "urn:metodos#hola",
+    "rpc",
+    "encoded",
+    "");
 
 $server->register("ListaProducto",//
     array(),

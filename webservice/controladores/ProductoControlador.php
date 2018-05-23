@@ -1,4 +1,24 @@
 <?php
+function hola(){
+    $esto = new ProductoControlador();
+    return $esto->hola();
+}
+function ListaProducto(){
+    $esto = new ProductoControlador();
+    return $esto->ListaProducto();
+}
+function EliminarProducto($id, $usuario){
+    $esto = new ProductoControlador();
+    return $esto->EliminarProducto($id, $usuario);
+}
+function AgregarProducto($nombre, $existencia, $precio, $usuario){
+    $esto = new ProductoControlador();
+    return $esto->AgregarProducto($nombre, $existencia, $precio, $usuario);
+}
+function ModificarProducto($id, $nombre, $existencia, $precio, $usuario){
+    $esto = new ProductoControlador();
+    return $esto->ModificarProducto($id, $nombre, $existencia, $precio, $usuario);
+}
 Class DBConexion {
 
         private $host = "localhost";
@@ -68,6 +88,8 @@ Class DBConexion {
 
         public function __construct(){}
 
+        public function hola(){ return "hola";}
+           
         public function ListaProducto(){
             if(!$this->start()) {
                 $this->stop();

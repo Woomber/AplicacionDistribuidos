@@ -1,5 +1,16 @@
 <?php
-
+function ingresarUsuario($usuario, $password){
+    $esto = new UsuarioControlador();
+    return $esto->ingresarUsuario($usuario, $password);
+}
+function registrarUsuario($usuario, $password){
+    $esto = new UsuarioControlador();
+    return $esto->registrarUsuario($usuario, $password);
+}
+function CheckUsuario($key){
+    $esto = new UsuarioControlador();
+    return $esto->CheckUsuario($key);
+}
     Class UsuarioControlador extends DBConexion {
 
         public $result = 1;
