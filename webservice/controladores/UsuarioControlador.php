@@ -31,7 +31,7 @@ function CheckUsuario($key){
                 $this->start();
                 
                 if(empty($usuario) && empty($password)):
-                    return 2;
+                    return "2";
                 endif;
 
                 $username = trim($usuario);
@@ -55,9 +55,9 @@ function CheckUsuario($key){
                         "hash" => $key,
                         "username" => $username
                     ]); 
-                    return array("usuario" => $username, "hash" => $key);
+                    return json_encode(array("usuario" => $username, "hash" => $key));
                 else:
-                    return 3;
+                    return "3";
                 endif;
                 
                 $this->stop();
@@ -115,7 +115,7 @@ function CheckUsuario($key){
                 
                 $this->stop();
                 //aquí debe ir a producto.php
-                return array("usuario" => $username, "hash" => $key);
+                return json_encode(array("usuario" => $username, "hash" => $key));
             endif;    
 
         }

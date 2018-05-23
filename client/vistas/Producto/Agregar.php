@@ -1,3 +1,19 @@
+<?php
+require_once "nusoap/lib/nusoap.php";
+if(isset($_POST["mod_nombre"]))  {
+$client = new SoapClient("http://localhost/aplicaciondistribuidos/webservice/metodos.php?wsdl", "wsdl");
+  $result = $client->call("AgregarProducto",array(
+      "nombre" => $_POST["mod_nombre"],
+      "existencia" => $_POST["mod_existencia"],
+      "precio" => $_POST["mod_precio"],
+      "usuario" => $_SESSION["usuario"]
+      ));
+        
+        header("Location: producto.php?c=Producto&a=Lista&e=$result");
+}  
+
+?>
+
 <div class="container">
 		<form class="form-horizontal" method="post">
 			<div class="panel panel-info">

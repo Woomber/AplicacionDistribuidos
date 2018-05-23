@@ -38,12 +38,12 @@
                 endif;*/
 
                 $user = $_SESSION["usuario"];
-                $key = $user->hash;
+                $key = $_SESSION["hash"];
 
                 if($client->call("CheckUsuario",array("key" => $key))):
                     unset($_SESSION["usuario"]);
                     session_destroy();
-                    header("Location: usuario.php?c=Usuario&a=Ingresar");
+                   header("Location: usuario.php?c=Usuario&a=Ingresar");
 
 
                 endif;

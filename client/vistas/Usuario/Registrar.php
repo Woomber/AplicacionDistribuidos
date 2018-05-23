@@ -1,12 +1,17 @@
 <?php
     require_once "nusoap/lib/nusoap.php";
-    $client = new SoapClient("http://localhost/distribuidos/webservice/metodos.php?wsdl", "wsdl");
+    $client = new SoapClient("http://localhost/aplicaciondistribuidos/webservice/metodos.php?wsdl", "wsdl");
 
     if(isset($_POST["usuario"]) && isset($_POST["password"])){
         $usuario = $_POST["usuario"];
         $password = $_POST["password"];
         $result = $client->call("registrarUsuario",array("usuario" => $usuario, "password" => $password));
-        if($result != 2 && $result !=3) $_SESSION["usuario"] = $result;
+        if($result != 2 && $result !=3){
+            $result = json_decode($result);
+            $_SESSION["usuario"] = $result->usuario;
+            $_SESSION["hash"] = $result->hash;
+             header("Location: producto.php?c=Producto&a=Lista");
+        } 
     }
     else{
         $result = 1;

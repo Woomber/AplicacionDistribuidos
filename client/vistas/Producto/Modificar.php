@@ -1,3 +1,33 @@
+<?php
+
+require_once "nusoap/lib/nusoap.php";
+    $client = new SoapClient("http://localhost/aplicaciondistribuidos/webservice/metodos.php?wsdl", "wsdl");
+  $result = $client->call("GetProducto",array("id" => $_GET["id"]));
+  $result = json_decode($result);
+
+
+if(isset($_POST["mod_nombre"]))  {
+ $result = $client->call("ModificarProducto",array(
+      "id" => $_GET["id"],
+      "nombre" => $_POST["mod_nombre"],
+      "existencia" => $_POST["mod_existencia"],
+      "precio" => $_POST["mod_precio"],
+      "nnombre" => $_SESSION["nombre"],
+      "nexistencia" =>  $_SESSION["existencia"],
+      "nprecio" =>  $_SESSION["precio"],
+      "usuario" => $_SESSION["usuario"]
+      ));
+    
+        header("Location: producto.php?c=Producto&a=Lista&e=$result");
+}  
+
+
+$_SESSION["nombre"] = $result->nombre;
+$_SESSION["precio"] = $result->precio;
+$_SESSION["existencia"] = $result->existencia;
+?>
+
+
 <div class="container">
     <form class="form-horizontal" method="post">
         <div class="panel panel-info">
@@ -8,19 +38,19 @@
                 <div class="form-group">
                     <label for="mod_nombre" class="col-sm-3 control-label">Nombre</label>
                     <div class="col-sm-8">
-                        <input type="text" value="<?php echo $master->result->nombre?>" class="form-control" id="mod_nombre" name="mod_nombre" placeholder="Nombre del producto" required>
+                        <input type="text" value="<?php echo $result->nombre?>" class="form-control" id="mod_nombre" name="mod_nombre" placeholder="Nombre del producto" required>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="mod_existencia" class="col-sm-3 control-label">Existencia</label>
                     <div class="col-sm-8">
-                        <input type="text" value="<?php echo $master->result->existencia?>" class="form-control" id="mod_existencia" name="mod_existencia" placeholder="Existencia del producto" required pattern="[0-9]+">
+                        <input type="text" value="<?php echo $result->existencia?>" class="form-control" id="mod_existencia" name="mod_existencia" placeholder="Existencia del producto" required pattern="[0-9]+">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="mod_precio" class="col-sm-3 control-label">Precio</label>
                     <div class="col-sm-8">
-                        <input type="text" value="<?php echo $master->result->precio?>" class="form-control" id="mod_precio" name="mod_precio" placeholder="Precio del producto" required pattern="^[0-9]{1,5}(\.[0-9]{0,2})?$">
+                        <input type="text" value="<?php echo $result->precio?>" class="form-control" id="mod_precio" name="mod_precio" placeholder="Precio del producto" required pattern="^[0-9]{1,5}(\.[0-9]{0,2})?$">
                     </div>
                 </div>
             </div>

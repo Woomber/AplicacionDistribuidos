@@ -7,6 +7,12 @@ function ListaProducto(){
     $esto = new ProductoControlador();
     return $esto->ListaProducto();
 }
+
+function GetProducto($id){
+    $esto = new ProductoControlador();
+    return $esto->GetProducto($id);
+}
+
 function EliminarProducto($id, $usuario){
     $esto = new ProductoControlador();
     return $esto->EliminarProducto($id, $usuario);
@@ -15,9 +21,9 @@ function AgregarProducto($nombre, $existencia, $precio, $usuario){
     $esto = new ProductoControlador();
     return $esto->AgregarProducto($nombre, $existencia, $precio, $usuario);
 }
-function ModificarProducto($id, $nombre, $existencia, $precio, $usuario){
+function ModificarProducto($id, $nombre, $existencia, $precio,$nnombre, $nexistencia, $nprecio, $usuario){
     $esto = new ProductoControlador();
-    return $esto->ModificarProducto($id, $nombre, $existencia, $precio, $usuario);
+    return $esto->ModificarProducto($id, $nombre, $existencia, $precio,$nnombre, $nexistencia, $nprecio, $usuario);
 }
 Class DBConexion {
 
@@ -117,6 +123,35 @@ Class DBConexion {
             
             $this->stop();
             return json_encode($lista);
+        }
+
+         public function GetProducto($id){
+            if(!$this->start()) {
+                $this->stop();
+                return -1;
+            }
+
+            $stmt = $this->pdo->prepare("SELECT * FROM ".$this->tabla. " WHERE id = " . $id);
+            $stmt->execute();
+
+            if($stmt) $this->status = 200;
+            else $this->status = 404;
+
+            
+
+            while($fila = $stmt->fetch(PDO::FETCH_ASSOC)):
+                $producto = new ProductoModelo();
+                $producto->set(
+                    $fila[$this->fields["id"]],
+                    $fila[$this->fields["nombre"]],
+                    $fila[$this->fields["exist"]],
+                    $fila[$this->fields["precio"]]
+                );
+                
+            endwhile;
+            
+            $this->stop();
+            return json_encode($producto);
         }
 
          public function EliminarProducto($id, $usuario){
@@ -238,7 +273,7 @@ Class DBConexion {
 
         }
 
-        public function ModificarProducto($id, $nombre, $existencia, $precio, $usuario){
+        public function ModificarProducto($id, $nombre, $existencia, $precio, $nnombre, $nexistencia, $nprecio, $usuario){
 
             if(isset($nombre)):
             if(!$this->start()):
@@ -283,7 +318,7 @@ Class DBConexion {
                     $actual->precio = $res->precio;
 
                     //Ahorita modifica siempre
-                    if(true):
+                    if(/*$nombre == $nnombre && $precio == $nprecio && $existencia == $nexistencia*/true):
                         $stmt = $this->pdo->prepare(
                             "UPDATE ".$this->tabla.
                             " SET ".

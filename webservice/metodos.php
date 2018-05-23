@@ -32,6 +32,15 @@ $server->register("ListaProducto",//
     "encoded",
     "");
 
+    $server->register("GetProducto",//
+    array("id" => "xsd:int"),
+    array("return" => "xsd:string"),
+    "urn:metodos",
+    "urn:metodos#ListaProducto",
+    "rpc",
+    "encoded",
+    "");
+
 $server->register("EliminarProducto",
     array("id" => "xsd:int","usuario" => "xsd:int"),
     array("return" => "xsd:int"),
@@ -50,7 +59,15 @@ $server->register("AgregarProducto",
     "encoded",
     "");
 $server->register("ModificarProducto",
-    array("id" => "xsd:int","nombre" => "xsd:string","existencia" => "xsd:int","precio" => "xsd:int","usuario" => "xsd:string"),
+    array(
+        "id" => "xsd:int",
+        "nombre" => "xsd:string",
+        "existencia" => "xsd:int",
+        "precio" => "xsd:int",
+        "nnombre" => "xsd:string",
+        "nexistencia" => "xsd:int",
+        "nprecio" => "xsd:int",
+        "usuario" => "xsd:string"),
     array("return" => "xsd:int"),
     "urn:metodos",
     "urn:metodos#ModificarProducto",
@@ -61,7 +78,7 @@ $server->register("ModificarProducto",
 //usuario controlador
 $server->register("ingresarUsuario",
     array("usuario" => "xsd:string","password" => "xsd:string"),
-    array("return" => "xsd:int"),
+    array("return" => "xsd:string"),
     "urn:metodos",
     "urn:metodos#ingresarUsuario",
     "rpc",
@@ -69,7 +86,7 @@ $server->register("ingresarUsuario",
     "");
 $server->register("registrarUsuario",
     array("usuario" => "xsd:string","password" => "xsd:string"),
-    array("return" => "xsd:int"),
+    array("return" => "xsd:string"),
     "urn:metodos",
     "urn:metodos#registrarUsuario",
     "rpc",

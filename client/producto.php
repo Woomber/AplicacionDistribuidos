@@ -8,22 +8,20 @@
 
     $master = false;
 
-    if($controlador && $accion):
-        $class = $controlador."Controlador";
-        if(class_exists($class)):
-            $master = new $class();
-            $master->$accion();
-            if(isset($_GET["e"])):
-                $opc = $_GET["e"];
-                switch((int)$opc):
-                    case 1:$interfaz->setAccion("ProductoEliminado");break;
-                    case 2:$interfaz->setAccion("ProductoInexistente");break;
-                    case 3:$interfaz->setAccion("ProductoModificado");break;
-                endswitch;
-            endif;
-        endif;
-
-    endif;
+     if($controlador == "Producto"){
+        switch($accion){
+            case "Eliminar":
+                 $client = new SoapClient("http://localhost/aplicaciondistribuidos/webservice/metodos.php?wsdl", "wsdl");
+                $result = $client->call("EliminarProducto",array(
+                    "id" => $_GET["id"],
+                    "usuario" => $_SESSION["usuario"]
+                ));
+                header("Location: producto.php?c=Producto&a=Lista&e=$result");
+         var_dump($result);
+            break;
+        }
+    }
+    
 ?>
 <!DOCTYPE html>
 <html lang="en">

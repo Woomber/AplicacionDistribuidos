@@ -1,3 +1,10 @@
+<?php
+require_once "nusoap/lib/nusoap.php";
+    $client = new SoapClient("http://localhost/aplicaciondistribuidos/webservice/metodos.php?wsdl", "wsdl");
+  $result = $client->call("ListaProducto",array());
+  $result = json_decode($result);
+      
+?>
 <div class="container">
     <div class="panel panel-info">
         <div class="panel-heading">
@@ -18,7 +25,7 @@
                         <th class="text-right">Acciones</th>
                     </tr>
                     <?php
-                        foreach($master->result as $producto):
+                        foreach($result as $producto):
                             echo "<td>$producto->id</td>
                             <td>$producto->nombre</td>
                             <td>$producto->existencia</td>
