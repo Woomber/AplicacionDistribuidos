@@ -13,19 +13,18 @@
 
         public function __construct(){}
 
-        public function Ingresar(){
+        public function Ingresar($usuario, $password){
 
-            if($_SERVER["REQUEST_METHOD"]=="POST" && isset($_POST["usuario"]) && isset($_POST["password"])):
+            if(true):
                 
                 $this->start();
                 
-                if(empty($_POST["usuario"]) && empty($_POST["password"])):
-                    $this->result = 2;
-                    return;
+                if(empty($usuario) && empty($password)):
+                    return 2;
                 endif;
 
-                $username = trim($_POST["usuario"]);
-                $password = hash("sha256", $_POST["password"]);
+                $username = trim($usuario);
+                $password = hash("sha256", $password);
                 
                 $stmt = $this->pdo->prepare(
                     "SELECT * FROM ".$this->tabla." ".
@@ -45,12 +44,9 @@
                         "hash" => $key,
                         "username" => $username
                     ]);
-                    $_SESSION["usuario"] = $username;
-                    $_SESSION["hash"] = $key;
-                    header("Location: producto.php?c=Producto&a=Lista");
+                    return array("usuario" => $username, "hash" => $key);
                 else:
-                    $this->result = 3;
-                    return false;
+                    return 3;
                 endif;
                 
                 $this->stop();
@@ -58,19 +54,18 @@
 
         }   
 
-        public function Registrar(){
+        public function Registrar($usuario, $password){
 
-            if($_SERVER["REQUEST_METHOD"]=="POST" && isset($_POST["usuario"]) && isset($_POST["password"])):
+            if(true):
 
                 $this->start();
 
-                if(empty($_POST["usuario"]) && empty($_POST["password"])):
-                    $this->result = 2;
-                    return;
+                if(empty($usuario) && empty($password)):
+                    return 2;
                 endif;
 
-                $username = trim($_POST["usuario"]);
-                $password = hash("sha256", $_POST["password"]);
+                $username = trim($usuario);
+                $password = hash("sha256", $password);
                 $key = hash("sha256",(string)mt_rand(10, 1000));
 
 
@@ -84,8 +79,7 @@
                 ]);
 
                 if($stmt->rowCount() != 0):
-                    $this->result = 3;
-                    return;
+                    return 3;
                 endif;
 
                 $stmt = $this->pdo->prepare(
@@ -107,27 +101,25 @@
                     'hash' => $key
                 ]);
 
-                $_SESSION["usuario"] = $username;
-                $_SESSION["hash"] = $key;
                 
                 $this->stop();
-                header("Location: producto.php");
+                //aquí debe ir a producto.php
+                return array("usuario" => $username, "hash" => $key);
             endif;    
 
         }
 
         public function Logout(){
-            session_destroy();
-            header("Location: usuario.php?c=Usuario&a=Ingresar");
+            //Destruir sesión y llevar al login (cliente)
+            return;
         }
 
-        public function Check(){
+        public function Check($key){
 
-            if(isset($_SESSION["hash"])):
+            if(isset($key)):
 
                 $this->start();
 
-                $key = $_SESSION["hash"];
                 $stmt = $this->pdo->prepare(
                     "SELECT * FROM " . $this->tabla . " " .
                     "WHERE " . $this->fields["hash"] . " = :key"
@@ -139,7 +131,7 @@
                 if($stmt->rowCount() == 1):
                     return false;
                 else:
-                    session_destroy();
+                    //destruir sesión en cliente
                     return true;
                 endif;
 

@@ -16,7 +16,7 @@
         public function Lista(){
             if(!$this->start()) {
                 $this->stop();
-                return false;
+                return -1;
             }
 
             $stmt = $this->pdo->prepare("SELECT * FROM ".$this->tabla);
@@ -39,13 +39,13 @@
             endwhile;
             
             $this->stop();
-            $this->result = $lista;
+            return $lista;
         }
 
-         public function Eliminar(){
+         public function Eliminar($id, $usuario){
             if(!$this->start()) {
                 $this->stop();
-                return false;
+                return -1;
             }
 
             $stmt = $this->pdo->prepare(
@@ -53,24 +53,23 @@
                 "WHERE " . $this->fields["id"] . " = :id"
             );
             $stmt->execute([
-                'id' => $_GET["id"]
+                'id' => $id
             ]);
 
             if($stmt->rowCount() == 0):
-                $usuario = new UsuarioModelo();
-                $usuario->username = $_SESSION["usuario"];
+                $uusuario = new UsuarioModelo();
+                $uusuario->username = $usuario;
 
                 $producto = new ProductoModelo();
-                $producto->id = $_GET["id"];
+                $producto->id = $id;
                 $producto->nombre = "NE";
                 $producto->existencia = -1;
                 $producto->precio = -1;
 
                 $log = new LoggerControlador();
-                $log->IEliminar($usuario, $producto);
+                $log->IEliminar($uusuario, $producto);
                 
-                header("Location: producto.php?c=Producto&a=Lista&e=2");
-                return;
+                return 2;
             endif;
 
             $this->result = $stmt->fetch();
@@ -86,119 +85,116 @@
             );
 
             $stmt->execute([
-                'id' => $_GET["id"]
+                'id' => $id
             ]);
 
-            $usuario = new UsuarioModelo();
-            $usuario->username = $_SESSION["usuario"];
+            $uusuario = new UsuarioModelo();
+            $uusuario->username = $usuario;
             $log = new LoggerControlador();
-            $log->Eliminar($usuario, $producto);
+            $log->Eliminar($uusuario, $producto);
 
             if($stmt) $this->status = 200;
             else $this->status = 503;
 
             $this->stop();
             
-            header("Location: producto.php?c=Producto&a=Lista");
+            return 0;
 
         }
 
-        public function Agregar(){
+        public function Agregar($nombre, $existencia, $precio, $usuario){
 
-            if($_SERVER["REQUEST_METHOD"]=="POST" && isset($_POST["mod_nombre"]) && isset($_POST["mod_existencia"]) && isset($_POST["mod_precio"])):
+           
 
-                if(!$this->start()) {
-                    $this->stop();
-                    return false;
-                }
-
-                $producto = new ProductoModelo();
-                $producto->nombre = $_POST["mod_nombre"];
-                $producto->existencia = intval($_POST["mod_existencia"]);
-                $producto->precio = floatval($_POST["mod_precio"]);
-
-                if(empty($producto->existencia) && empty($producto->precio) && empty($producto->nombre)):
-                    return false;
-                endif;
-
-                if(!filter_var($producto->precio, FILTER_VALIDATE_INT) && !filter_var($producto->existencia, FILTER_VALIDATE_INT)):
-                    return false;
-                endif;
-
-                if((int)$producto->precio < 0 || (int)$producto->existencia < 0):
-                    return false;
-                endif;
-                
-                $stmt = $this->pdo->prepare(
-                    "INSERT INTO ".$this->tabla."
-                    (
-                        ".$this->fields["nombre"].",
-                        ".$this->fields["exist"].",
-                        ".$this->fields["precio"]."
-                    ) VALUES (
-                        :nombre,
-                        :exist,
-                        :precio
-                    )
-                ");
-                
-                $stmt->execute([
-                    'nombre' => $producto->nombre,
-                    'exist' => $producto->existencia,
-                    'precio' => $producto->precio
-                ]);
-                    
-                $producto->id = $this->pdo->lastInsertId();
-                $usuario = new UsuarioModelo();
-                $usuario->username = $_SESSION["usuario"];
-
-                $log = new LoggerControlador();
-                $log->Agregar($usuario, $producto);
-                if($stmt) $this->status = 200;
-                else $this->status = 503;
-
+            if(!$this->start()) {
                 $this->stop();
-                header("Location: producto.php?c=Producto&a=Lista");
+                return -1;
+            }
 
+            $producto = new ProductoModelo();
+            $producto->nombre = $nombre;
+            $producto->existencia = intval($existencia);
+            $producto->precio = floatval($precio);
+
+            if(empty($producto->existencia) && empty($producto->precio) && empty($producto->nombre)):
+                return -1;
             endif;
 
+            if(!filter_var($producto->precio, FILTER_VALIDATE_INT) && !filter_var($producto->existencia, FILTER_VALIDATE_INT)):
+                return -1;
+            endif;
+
+            if((int)$producto->precio < 0 || (int)$producto->existencia < 0):
+                return -1;
+            endif;
+            
+            $stmt = $this->pdo->prepare(
+                "INSERT INTO ".$this->tabla."
+                (
+                    ".$this->fields["nombre"].",
+                    ".$this->fields["exist"].",
+                    ".$this->fields["precio"]."
+                ) VALUES (
+                    :nombre,
+                    :exist,
+                    :precio
+                )
+            ");
+            
+            $stmt->execute([
+                'nombre' => $producto->nombre,
+                'exist' => $producto->existencia,
+                'precio' => $producto->precio
+            ]);
+                
+            $producto->id = $this->pdo->lastInsertId();
+            $uusuario = new UsuarioModelo();
+            $uusuario->username = $usuario;
+
+            $log = new LoggerControlador();
+            $log->Agregar($uusuario, $producto);
+            if($stmt) $this->status = 200;
+            else $this->status = 503;
+
+            $this->stop();
+            return 0;
+
         }
 
-        public function Modificar(){
+        public function Modificar($id, $nombre, $existencia, $precio, $usuario){
 
-            if($_SERVER["REQUEST_METHOD"]=="POST" && isset($_POST["mod_nombre"]) && isset($_POST["mod_existencia"]) && isset($_POST["mod_precio"])):
+            if(isset($nombre)):
+            if(!$this->start()):
+                $this->stop();
+                return -1;
+            endif;
 
-                if(!$this->start()):
-                    $this->stop();
-                    return false;
-                endif;
+            $producto = new ProductoModelo();
+            $producto->nombre = $nombre;
+            $producto->existencia = intval($existencia);
+            $producto->precio = floatval($precio);
+            $producto->id = $id;
 
-                $producto = new ProductoModelo();
-                $producto->nombre = $_POST["mod_nombre"];
-                $producto->existencia = intval($_POST["mod_existencia"]);
-                $producto->precio = floatval($_POST["mod_precio"]);
-                $producto->id = $_GET["id"];
+            if(empty($producto->existencia) && empty($producto->precio) && empty($producto->nombre)):
+                return -1;
+            endif;
 
-                if(empty($producto->existencia) && empty($producto->precio) && empty($producto->nombre)):
-                    return false;
-                endif;
+            if(!filter_var($producto->precio, FILTER_VALIDATE_INT) && !filter_var($producto->existencia, FILTER_VALIDATE_INT)):
+                return -1;
+            endif;
 
-                if(!filter_var($producto->precio, FILTER_VALIDATE_INT) && !filter_var($producto->existencia, FILTER_VALIDATE_INT)):
-                    return false;
-                endif;
+            if((int)$producto->precio < 0 || (int)$producto->existencia < 0):
+                return -1;
+            endif;
 
-                if((int)$producto->precio < 0 || (int)$producto->existencia < 0):
-                    return false;
-                endif;
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM " . $this->tabla . " " .
+                "WHERE " . $this->fields["id"] . " = :id"
+            );
 
-                $stmt = $this->pdo->prepare(
-                    "SELECT * FROM " . $this->tabla . " " .
-                    "WHERE " . $this->fields["id"] . " = :id"
-                );
-
-                $stmt->execute([
-                    'id' => $producto->id
-                ]);
+            $stmt->execute([
+                'id' => $producto->id
+            ]);
 
                 if($stmt->rowCount() == 1):
 
@@ -209,7 +205,7 @@
                     $actual->existencia = $res->existencia;
                     $actual->precio = $res->precio;
 
-                    if($actual->id == $_SESSION["producto_id"] && $actual->nombre == $_SESSION["producto_nombre"] && $actual->existencia == $_SESSION["producto_existencia"] && $actual->precio == $_SESSION["producto_precio"]):
+                    if($actual->id == $id && $actual->nombre == $nombre && $actual->existencia == $existencia && $actual->precio == $precio):
                         $stmt = $this->pdo->prepare(
                             "UPDATE ".$this->tabla.
                             " SET ".
@@ -226,40 +222,38 @@
                             'id' => $producto->id
                         ]);
 
-                        $usuario = new UsuarioModelo();
-                        $usuario->username = $_SESSION["usuario"];
+                        $uusuario = new UsuarioModelo();
+                        $uusuario->username = $usuario;
 
                         $log = new LoggerControlador();
-                        $log->Modificar($usuario, $producto);
+                        $log->Modificar($uusuario, $producto);
 
                         $this->stop();
-                        header("Location: producto.php?c=Producto&a=Lista");
+                        return 0;
                     else:
-                        $usuario = new UsuarioModelo();
-                        $usuario->username = $_SESSION["usuario"];
+                        $uusuario = new UsuarioModelo();
+                        $uusuario->username = $usuario;
 
                         $log = new LoggerControlador();
-                        $log->IModificar($usuario, $producto);
-                        header("Location: producto.php?c=Producto&a=Lista&e=3");
+                        $log->IModificar($uusuario, $producto);
+                        return 3;
                     endif;
                 else:
-                    $usuario = new UsuarioModelo();
-                    $usuario->username = $_SESSION["usuario"];
+                    $uusuario = new UsuarioModelo();
+                    $uusuario->username = $usuario;
 
                     $log = new LoggerControlador();
-                    $log->IModificar($usuario, $producto);
-                    header("Location: producto.php?c=Producto&a=Lista&e=1");
+                    $log->IModificar($uusuario, $producto);
+                    return 1;
                 endif;
 
             else:
-                if(isset($_GET["id"])):
+                if(isset($id)):
 
                     if(!$this->start()) {
                         $this->stop();
-                        return false;
+                        return -1;
                     }
-
-                    $id = $_GET["id"];
 
                     $stmt = $this->pdo->prepare(
                         "SELECT * FROM " . $this->tabla . " " .
@@ -271,18 +265,15 @@
                     ]);
                     if($stmt->rowCount() == 1):
                         $this->result = $stmt->fetch();
-                        $_SESSION["producto_id"] = $this->result->id;
-                        $_SESSION["producto_nombre"] = $this->result->nombre;
-                        $_SESSION["producto_existencia"] = $this->result->existencia;
-                        $_SESSION["producto_precio"] = $this->result->precio;
+                        return $this->result;
                     else:
-                        header("Location: producto.php?c=Producto&a=Lista&e=2");    
+                        return 2;    
                     endif;
                 else:
-                    header("Location: producto.php?c=Producto&a=Lista");
+                    return 0;
                 endif;
-            endif;
 
+            endif;
         }
 
     }
